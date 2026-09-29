@@ -1,97 +1,84 @@
 # NutriScan
 
-A free, ad-free nutrition tracking app that lets you scan nutrition labels from food products, extract nutritional data via OCR and AI, and track your daily intake through a custom meal planner. All data is stored locally in your browser.
+A free, ad-free web application that allows users to scan nutrition labels from food products using their camera, extract nutritional data via OCR and AI, and track their daily nutritional intake through a custom meal planner. All data is stored locally in the browser.
 
 ## Features
 
-- **Scan Nutrition Labels**: Take a photo of a nutrition label and extract nutritional data (calories, fats, carbs, protein, sodium, etc.) using AI-powered OCR.
-- **Custom Meal Planning**: Create meals by adding scanned products or manually entering food items. Specify quantities and get calculated totals.
-- **Track Daily Intake**: View your total nutritional intake for any given day, broken down by meal.
-- **Multi-language Support**: Works with nutrition labels in German, Dutch, French, Italian, and English.
-- **Free & Ad-Free**: No cost, no advertisements. All data stays on your device.
+- **Scan Nutrition Labels**: Use your camera to capture nutrition labels and extract data via AI
+- **Manual Entry**: Paste OCR text from nutrition labels for manual parsing
+- **Product Database**: Save and manage your favorite food products
+- **Meal Planner**: Create meals with multiple items and track nutritional totals
+- **Local Storage**: All data stored locally in your browser - no server required
 
-## How to Run
-
-### Prerequisites
-
-- Node.js 24+ (for running tests)
-- A modern web browser
-
-### Running the App
-
-Simply open `public/index.html` in a web browser. No server required for basic usage.
-
-For a local development server:
-
-```bash
-npx serve public
-```
-
-### Running Tests
-
-```bash
-node --test tests/*.test.js
-```
-
-## AI Configuration
-
-NutriScan uses an OpenAI-compatible endpoint for OCR. To configure:
-
-1. Open the app in your browser
-2. Go to the **Config** tab
-3. Enter your AI endpoint URL (e.g., `https://api.openai.com/v1/chat/completions`)
-4. Enter your API key
-5. Click **Save Configuration**
-
-Your configuration is stored locally in your browser's localStorage.
-
-### Supported Endpoints
-
-- OpenAI (`https://api.openai.com/v1/chat/completions`)
-- Any OpenAI-compatible API (e.g., local LLMs, other providers)
-
-## How to Use
-
-### Scanning a Product
-
-1. Go to the **Scan** tab
-2. Tap the scan area to take a photo or upload an image of a nutrition label
-3. Click **Extract Nutrition Data**
-4. Review and edit the extracted data
-5. Click **Save Product**
-
-### Creating a Meal
-
-1. Go to the **Meals** tab
-2. Enter a meal name (e.g., "Breakfast")
-3. Select the date
-4. Click **Add Item** to add products from your saved products list
-5. Specify the quantity in grams
-6. Click **Save Meal**
-
-### Tracking Daily Intake
-
-1. Go to the **Track** tab
-2. Use the date navigation to select a day
-3. View your total nutritional intake and individual meals
-
-## What's Not Done Yet
-
-- **Barcode scanning**: Currently only image-based OCR is supported
-- **Food database**: No built-in food database; you must scan or manually add products
-- **Nutritional goals**: No configurable daily targets or alerts
-- **Export/Import**: No way to export or import your data
-- **Offline AI**: Requires an internet connection for OCR (no local model)
-- **Mobile app**: Web-only; no native iOS/Android app
-
-## Tech Stack
+## Stack
 
 - **Runtime**: Node 24 with ES modules
 - **Testing**: Node's built-in test runner (`node --test`)
-- **UI**: Static HTML/CSS/JavaScript
-- **Storage**: Browser localStorage
-- **AI**: OpenAI-compatible API endpoint
+- **Build**: No build step
+- **UI**: Static web page in `public/`
+- **AI**: OpenAI-compatible endpoint (configured by user via URL and key)
+- **Storage**: LocalStorage (browser-only, abstracted for testing)
+
+## Modules
+
+### `src/parser.js`
+- `parseNutritionTable(text)` - Parses OCR text from nutrition labels into structured data with `per100g` and `perServing` sections
+
+### `src/nutrition.js`
+- `calculateNutrition(item, quantity)` - Scales nutrition values by quantity (e.g., per 100g to per serving)
+
+### `src/mealPlanner.js`
+- `createMeal(name, items)` - Creates a meal with a name and list of items
+- `calculateMealTotal(meal)` - Calculates total nutrition for all items in a meal
+
+### `src/storage.js`
+- `saveProduct(storage, product)` / `getProducts(storage)` - Manage saved products
+- `saveMeal(storage, meal)` / `getMeals(storage)` - Manage saved meals
+- `saveDailyLog(storage, log)` / `getDailyLog(storage)` - Manage daily nutrition logs
+
+### `src/ocr.js`
+- `extractNutritionData(imageData, options)` - Sends image to AI endpoint for OCR and nutrition extraction
+
+## How to Run
+
+### Development
+
+```bash
+# Run tests
+npm test
+
+# Serve the web interface
+npx serve public
+```
+
+### Configure AI Endpoint
+
+1. Open the app in your browser
+2. Go to the **Settings** tab
+3. Enter your AI endpoint URL (e.g., `https://api.openai.com/v1/chat/completions`)
+4. Enter your API key
+5. Click **Save Settings**
+
+The app uses an OpenAI-compatible endpoint. You can use any compatible service like OpenAI, Azure OpenAI, or local models via Ollama.
+
+## How to Test
+
+```bash
+npm test
+```
+
+This runs all tests using Node's built-in test runner.
+
+## What's Not Done Yet
+
+- [ ] Real-time camera capture (currently uses file upload)
+- [ ] Daily nutrition goals and tracking
+- [ ] Meal recommendations based on dietary preferences
+- [ ] Export to CSV/PDF
+- [ ] Dark mode
+- [ ] Mobile app (PWA support)
+- [ ] Cloud sync for data backup
 
 ## License
 
-Free and open source. No ads, no tracking, no data collection.
+MIT
