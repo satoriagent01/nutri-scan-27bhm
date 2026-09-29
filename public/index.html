@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NutriScan - Free Nutrition Tracker</title>
+  <title>NutriScan - Nutrition Scanner</title>
   <style>
     :root {
-      --primary: #2e7d32;
-      --primary-light: #4caf50;
+      --primary: #4CAF50;
+      --primary-dark: #388E3C;
       --bg: #f5f5f5;
       --card-bg: #ffffff;
       --text: #333333;
       --text-light: #666666;
       --border: #e0e0e0;
-      --danger: #d32f2f;
+      --danger: #f44336;
+      --warning: #ff9800;
     }
 
     * {
@@ -29,1018 +30,1171 @@
       line-height: 1.6;
     }
 
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
     header {
       background: var(--primary);
       color: white;
-      padding: 1rem;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      padding: 20px 0;
+      margin-bottom: 20px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    header h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-
-    nav {
+    header .container {
       display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    nav button {
-      background: rgba(255,255,255,0.2);
-      border: none;
+    header h1 {
+      font-size: 1.8em;
+    }
+
+    nav a {
       color: white;
-      padding: 0.4rem 1rem;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.9rem;
+      text-decoration: none;
+      margin-left: 20px;
+      padding: 8px 16px;
+      border-radius: 4px;
       transition: background 0.2s;
     }
 
-    nav button:hover, nav button.active {
-      background: rgba(255,255,255,0.35);
+    nav a:hover {
+      background: rgba(255,255,255,0.2);
     }
 
-    main {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 1rem;
-    }
-
-    .section {
-      display: none;
-    }
-
-    .section.active {
-      display: block;
+    nav a.active {
+      background: rgba(255,255,255,0.3);
     }
 
     .card {
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
     .card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 0.75rem;
-      color: var(--primary);
+      margin-bottom: 15px;
+      color: var(--primary-dark);
     }
 
-    .card h3 {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
+    .form-group {
+      margin-bottom: 15px;
     }
 
     label {
       display: block;
-      font-size: 0.85rem;
+      margin-bottom: 5px;
+      font-weight: 600;
       color: var(--text-light);
-      margin-bottom: 0.25rem;
     }
 
-    input, select, textarea {
+    input, textarea, select {
       width: 100%;
-      padding: 0.6rem;
+      padding: 10px;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.95rem;
-      margin-bottom: 0.75rem;
+      border-radius: 4px;
+      font-size: 14px;
       font-family: inherit;
     }
 
-    input:focus, select:focus, textarea:focus {
+    input:focus, textarea:focus, select:focus {
       outline: none;
-      border-color: var(--primary-light);
-      box-shadow: 0 0 0 2px rgba(76,175,80,0.2);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
     }
 
-    button.primary {
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    button {
       background: var(--primary);
       color: white;
       border: none;
-      padding: 0.7rem 1.5rem;
-      border-radius: 8px;
+      padding: 12px 24px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 1rem;
-      font-weight: 500;
-      width: 100%;
+      font-size: 14px;
+      font-weight: 600;
       transition: background 0.2s;
     }
 
-    button.primary:hover {
-      background: var(--primary-light);
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
     }
 
     button.secondary {
-      background: transparent;
-      color: var(--primary);
-      border: 1px solid var(--primary);
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background 0.2s;
+      background: #6c757d;
     }
 
     button.secondary:hover {
-      background: rgba(46,125,50,0.1);
+      background: #5a6268;
     }
 
     button.danger {
-      background: transparent;
-      color: var(--danger);
-      border: 1px solid var(--danger);
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.8rem;
+      background: var(--danger);
+    }
+
+    button.danger:hover {
+      background: #d32f2f;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .nutrition-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
     }
 
     .nutrition-item {
       background: var(--bg);
-      padding: 0.5rem;
-      border-radius: 8px;
+      padding: 10px;
+      border-radius: 4px;
       text-align: center;
     }
 
     .nutrition-item .value {
-      font-size: 1.2rem;
-      font-weight: 600;
+      font-size: 1.5em;
+      font-weight: bold;
       color: var(--primary);
     }
 
     .nutrition-item .label {
-      font-size: 0.75rem;
+      font-size: 0.85em;
       color: var(--text-light);
     }
 
-    .meal-item {
+    .product-list, .meal-list {
+      list-style: none;
+    }
+
+    .product-item, .meal-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.5rem 0;
+      padding: 12px;
       border-bottom: 1px solid var(--border);
     }
 
-    .meal-item:last-child {
+    .product-item:last-child, .meal-item:last-child {
       border-bottom: none;
     }
 
-    .meal-item-info {
-      flex: 1;
+    .product-info h3 {
+      margin-bottom: 4px;
     }
 
-    .meal-item-info .name {
-      font-weight: 500;
-    }
-
-    .meal-item-info .qty {
-      font-size: 0.8rem;
+    .product-info p {
+      font-size: 0.85em;
       color: var(--text-light);
-    }
-
-    .scan-area {
-      border: 2px dashed var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.2s;
-      margin-bottom: 1rem;
-    }
-
-    .scan-area:hover {
-      border-color: var(--primary-light);
-    }
-
-    .scan-area .icon {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .preview-img {
-      max-width: 100%;
-      max-height: 200px;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-
-    .hidden {
-      display: none !important;
     }
 
     .badge {
       display: inline-block;
-      background: var(--primary-light);
-      color: white;
-      padding: 0.15rem 0.5rem;
-      border-radius: 10px;
-      font-size: 0.75rem;
-      margin-left: 0.5rem;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.75em;
+      font-weight: 600;
     }
 
-    .config-section {
+    .badge-success {
+      background: #e8f5e9;
+      color: var(--primary-dark);
+    }
+
+    .badge-warning {
       background: #fff3e0;
-      border: 1px solid #ffe0b2;
-      border-radius: 8px;
-      padding: 0.75rem;
-      margin-bottom: 1rem;
+      color: #e65100;
     }
 
-    .config-section label {
-      color: #e65100;
+    .hidden {
+      display: none;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .scan-area {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .scan-area:hover {
+      border-color: var(--primary);
+    }
+
+    .scan-area.dragover {
+      border-color: var(--primary);
+      background: rgba(76, 175, 80, 0.05);
+    }
+
+    .scan-icon {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+
+    .alert-success {
+      background: #e8f5e9;
+      color: var(--primary-dark);
+      border: 1px solid #c8e6c9;
+    }
+
+    .alert-error {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+    }
+
+    .alert-info {
+      background: #e3f2fd;
+      color: #1565c0;
+      border: 1px solid #bbdefb;
+    }
+
+    .meal-summary {
+      background: var(--bg);
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 15px;
+    }
+
+    .meal-summary h3 {
+      margin-bottom: 10px;
     }
 
     .empty-state {
       text-align: center;
-      padding: 2rem;
+      padding: 40px;
       color: var(--text-light);
     }
 
-    .empty-state .icon {
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
+    .empty-state p {
+      margin-top: 10px;
     }
 
-    .date-selector {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
 
-    .date-selector input[type="date"] {
-      flex: 1;
-    }
+      header .container {
+        flex-direction: column;
+        gap: 10px;
+      }
 
-    .date-selector button {
-      padding: 0.5rem;
-      border: 1px solid var(--border);
-      background: white;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
 
-    .total-bar {
-      background: var(--primary);
-      color: white;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      display: flex;
-      justify-content: space-around;
-    }
+      nav a {
+        margin: 5px;
+      }
 
-    .total-bar .stat {
-      text-align: center;
-    }
-
-    .total-bar .stat .value {
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .total-bar .stat .label {
-      font-size: 0.7rem;
-      opacity: 0.85;
-    }
-
-    .item-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr auto;
-      gap: 0.5rem;
-      align-items: end;
-      margin-bottom: 0.5rem;
-    }
-
-    .item-row input {
-      margin-bottom: 0;
-    }
-
-    @media (max-width: 400px) {
-      .item-row {
-        grid-template-columns: 1fr;
+      .nutrition-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>🥗 NutriScan</h1>
-    <nav>
-      <button class="active" data-section="scan">Scan</button>
-      <button data-section="meals">Meals</button>
-      <button data-section="track">Track</button>
-      <button data-section="config">Config</button>
-    </nav>
+    <div class="container">
+      <h1>🍎 NutriScan</h1>
+      <nav>
+        <a href="#" class="active" data-tab="scan">Scan</a>
+        <a href="#" data-tab="products">Products</a>
+        <a href="#" data-tab="meals">Meals</a>
+        <a href="#" data-tab="settings">Settings</a>
+      </nav>
+    </div>
   </header>
 
-  <main>
-    <!-- SCAN SECTION -->
-    <div id="scan" class="section active">
+  <main class="container">
+    <!-- Scan Tab -->
+    <div id="tab-scan" class="tab-content active">
       <div class="card">
         <h2>Scan Nutrition Label</h2>
-        <div class="scan-area" id="scanArea">
-          <div class="icon">📷</div>
-          <p>Tap to take a photo or upload an image</p>
-          <input type="file" id="fileInput" accept="image/*" capture="environment" class="hidden">
+        <div class="scan-area" id="scan-area">
+          <div class="scan-icon">📷</div>
+          <p>Drag & drop an image here or click to select</p>
+          <input type="file" id="image-input" accept="image/*" style="display: none;">
+          <button id="scan-btn" style="margin-top: 15px;">Choose Image</button>
         </div>
-        <img id="preview" class="preview-img hidden" alt="Preview">
-        <button class="primary" id="scanBtn" disabled>Extract Nutrition Data</button>
+        <div id="scan-result" class="hidden">
+          <h3>Scanned Product</h3>
+          <div id="scanned-nutrition" class="nutrition-grid"></div>
+          <div class="form-group" style="margin-top: 15px;">
+            <label for="product-name">Product Name</label>
+            <input type="text" id="product-name" placeholder="Enter product name">
+          </div>
+          <div class="btn-group">
+            <button id="save-product-btn">Save Product</button>
+            <button id="cancel-scan-btn" class="secondary">Cancel</button>
+          </div>
+        </div>
+        <div id="scan-loading" class="hidden">
+          <p>Scanning nutrition label... <span class="loading"></span></p>
+        </div>
+        <div id="scan-error" class="alert alert-error hidden"></div>
       </div>
 
-      <div id="scanResult" class="card hidden">
-        <h2>Extracted Nutrition Data</h2>
-        <p>Review and edit the data below, then save to your products.</p>
-        
-        <label>Product Name</label>
-        <input type="text" id="productName" placeholder="e.g., Hazelnut Chocolate">
-
-        <h3>Per 100g</h3>
-        <div class="nutrition-grid">
-          <div>
-            <label>Energy (kJ)</label>
-            <input type="number" id="energyKj" value="0">
-          </div>
-          <div>
-            <label>Energy (kcal)</label>
-            <input type="number" id="energyKcal" value="0">
-          </div>
-          <div>
-            <label>Fat (g)</label>
-            <input type="number" id="fat" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Saturated Fat (g)</label>
-            <input type="number" id="saturatedFat" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Carbohydrates (g)</label>
-            <input type="number" id="carbohydrates" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Sugars (g)</label>
-            <input type="number" id="sugars" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Fiber (g)</label>
-            <input type="number" id="fiber" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Protein (g)</label>
-            <input type="number" id="protein" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Sodium (g)</label>
-            <input type="number" id="sodium" value="0" step="0.01">
-          </div>
+      <div class="card">
+        <h2>Manual Entry</h2>
+        <p>Paste OCR text from a nutrition label:</p>
+        <div class="form-group">
+          <textarea id="ocr-text" placeholder="Paste nutrition label text here..."></textarea>
         </div>
-
-        <h3 style="margin-top: 1rem;">Per Serving</h3>
-        <label>Serving Size</label>
-        <input type="text" id="servingSize" placeholder="e.g., 30g = 1 Melto">
-        <div class="nutrition-grid">
-          <div>
-            <label>Energy (kJ)</label>
-            <input type="number" id="servingEnergyKj" value="0">
+        <button id="parse-ocr-btn">Parse Nutrition Data</button>
+        <div id="parsed-result" class="hidden" style="margin-top: 15px;">
+          <h3>Parsed Nutrition Data</h3>
+          <div id="parsed-nutrition" class="nutrition-grid"></div>
+          <div class="form-group" style="margin-top: 15px;">
+            <label for="manual-product-name">Product Name</label>
+            <input type="text" id="manual-product-name" placeholder="Enter product name">
           </div>
-          <div>
-            <label>Energy (kcal)</label>
-            <input type="number" id="servingEnergyKcal" value="0">
-          </div>
-          <div>
-            <label>Fat (g)</label>
-            <input type="number" id="servingFat" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Saturated Fat (g)</label>
-            <input type="number" id="servingSaturatedFat" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Carbohydrates (g)</label>
-            <input type="number" id="servingCarbohydrates" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Sugars (g)</label>
-            <input type="number" id="servingSugars" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Fiber (g)</label>
-            <input type="number" id="servingFiber" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Protein (g)</label>
-            <input type="number" id="servingProtein" value="0" step="0.1">
-          </div>
-          <div>
-            <label>Sodium (g)</label>
-            <input type="number" id="servingSodium" value="0" step="0.01">
-          </div>
+          <button id="save-manual-btn">Save Product</button>
         </div>
-
-        <button class="primary" id="saveProductBtn" style="margin-top: 1rem;">Save Product</button>
-      </div>
-
-      <div id="savedProducts" class="card hidden">
-        <h2>Saved Products</h2>
-        <div id="productsList"></div>
       </div>
     </div>
 
-    <!-- MEALS SECTION -->
-    <div id="meals" class="section">
+    <!-- Products Tab -->
+    <div id="tab-products" class="tab-content">
+      <div class="card">
+        <h2>Saved Products</h2>
+        <div id="product-list" class="product-list"></div>
+        <div id="no-products" class="empty-state hidden">
+          <p>No products saved yet. Scan a nutrition label to get started!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meals Tab -->
+    <div id="tab-meals" class="tab-content">
       <div class="card">
         <h2>Create Meal</h2>
-        <label>Meal Name</label>
-        <input type="text" id="mealName" placeholder="e.g., Breakfast">
-        
-        <label>Today's Date</label>
-        <input type="date" id="mealDate">
-
-        <h3>Items</h3>
-        <div id="mealItems"></div>
-        <button class="secondary" id="addItemBtn">+ Add Item</button>
-        
-        <button class="primary" id="saveMealBtn" style="margin-top: 1rem;">Save Meal</button>
-      </div>
-
-      <div id="mealsList" class="card hidden">
-        <h2>Saved Meals</h2>
-        <div id="mealsContainer"></div>
-      </div>
-    </div>
-
-    <!-- TRACK SECTION -->
-    <div id="track" class="section">
-      <div class="date-selector">
-        <button id="prevDay">◀</button>
-        <input type="date" id="trackDate">
-        <button id="nextDay">▶</button>
-      </div>
-
-      <div id="dailyTotal" class="total-bar hidden">
-        <div class="stat">
-          <div class="value" id="totalKcal">0</div>
-          <div class="label">kcal</div>
+        <div class="form-group">
+          <label for="meal-name">Meal Name</label>
+          <input type="text" id="meal-name" placeholder="e.g., Breakfast, Lunch">
         </div>
-        <div class="stat">
-          <div class="value" id="totalFat">0</div>
-          <div class="label">Fat (g)</div>
+        <div class="form-group">
+          <label for="meal-date">Date</label>
+          <input type="date" id="meal-date">
         </div>
-        <div class="stat">
-          <div class="value" id="totalCarbs">0</div>
-          <div class="label">Carbs (g)</div>
+        <div class="form-group">
+          <label>Add Items</label>
+          <div id="meal-items"></div>
+          <button id="add-item-btn" class="secondary" style="margin-top: 10px;">+ Add Item</button>
         </div>
-        <div class="stat">
-          <div class="value" id="totalProtein">0</div>
-          <div class="label">Protein (g)</div>
+        <div id="meal-summary" class="meal-summary hidden">
+          <h3>Meal Summary</h3>
+          <div id="meal-summary-nutrition" class="nutrition-grid"></div>
         </div>
-      </div>
-
-      <div id="dailyMeals" class="card hidden">
-        <h2>Meals for Today</h2>
-        <div id="dailyMealsContainer"></div>
-      </div>
-
-      <div id="dailyLog" class="card hidden">
-        <h2>Daily Log</h2>
-        <div class="nutrition-grid">
-          <div class="nutrition-item">
-            <div class="value" id="logEnergyKcal">0</div>
-            <div class="label">Energy (kcal)</div>
-          </div>
-          <div class="nutrition-item">
-            <div class="value" id="logEnergyKj">0</div>
-            <div class="label">Energy (kJ)</div>
-          </div>
-          <div class="nutrition-item">
-            <div class="value" id="logFat">0</div>
-            <div class="label">Fat (g)</div>
-          </div>
-          <div class="nutrition-item">
-            <div class="value" id="logSaturatedFat">0</div>
-            <div class="label">Sat. Fat (g)</div>
-          </div>
-          <div class="nutrition-item">
-            <div class="value" id="logCarbs">0</div>
-            <div class="label">Carbs (g)</div>
-          </div>
-          <div class="nutrition-item">
-            <div class="value" id="logSugars">0</div>
-            <div class="label">Sugars (g)</div>
-          </div>
-          <div class="nutrition-item">
-            <div class="value" id="logFiber">0</div>
-            <div class="label">Fiber (g)</div>
-          </div>
-          <div class="nutrition-item">
-            <div class="value" id="logProtein">0</div>
-            <div class="label">Protein (g)</div>
-          </div>
-          <div class="nutrition-item">
-            <div class="value" id="logSodium">0</div>
-            <div class="label">Sodium (g)</div>
-          </div>
+        <div class="btn-group" style="margin-top: 15px;">
+          <button id="save-meal-btn">Save Meal</button>
+          <button id="clear-meal-btn" class="secondary">Clear</button>
         </div>
-      </div>
-
-      <div id="noData" class="empty-state">
-        <div class="icon">📊</div>
-        <p>No data for this date. Create a meal to start tracking!</p>
-      </div>
-    </div>
-
-    <!-- CONFIG SECTION -->
-    <div id="config" class="section">
-      <div class="card">
-        <h2>AI Configuration</h2>
-        <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 1rem;">
-          Configure your OpenAI-compatible endpoint for OCR. Your key is stored locally in your browser.
-        </p>
-        
-        <label>Endpoint URL</label>
-        <input type="url" id="endpointUrl" placeholder="https://api.openai.com/v1/chat/completions">
-        
-        <label>API Key</label>
-        <input type="password" id="apiKey" placeholder="sk-...">
-        
-        <button class="primary" id="saveConfigBtn">Save Configuration</button>
       </div>
 
       <div class="card">
-        <h2>About NutriScan</h2>
-        <p style="font-size: 0.9rem; color: var(--text-light);">
-          NutriScan is a free, ad-free nutrition tracking app. Scan nutrition labels, create custom meals, and track your daily intake. All data is stored locally in your browser.
-        </p>
-        <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;">
-          Supports multi-language nutrition labels (German, Dutch, French, Italian, English).
-        </p>
+        <h2>Meal History</h2>
+        <div id="meal-list" class="meal-list"></div>
+        <div id="no-meals" class="empty-state hidden">
+          <p>No meals saved yet. Create your first meal!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="tab-settings" class="tab-content">
+      <div class="card">
+        <h2>AI Settings</h2>
+        <div class="form-group">
+          <label for="ai-endpoint">AI Endpoint URL</label>
+          <input type="url" id="ai-endpoint" placeholder="https://api.openai.com/v1/chat/completions">
+        </div>
+        <div class="form-group">
+          <label for="ai-key">API Key</label>
+          <input type="password" id="ai-key" placeholder="sk-...">
+        </div>
+        <button id="save-settings-btn">Save Settings</button>
+      </div>
+
+      <div class="card">
+        <h2>Data Management</h2>
+        <div class="btn-group">
+          <button id="export-data-btn" class="secondary">Export Data</button>
+          <button id="import-data-btn" class="secondary">Import Data</button>
+          <button id="clear-data-btn" class="danger">Clear All Data</button>
+        </div>
+        <input type="file" id="import-file-input" accept=".json" style="display: none;">
       </div>
     </div>
   </main>
 
   <script type="module">
-    import { parseNutritionTable } from '../src/parser.js';
-    import { calculateNutrition } from '../src/nutrition.js';
-    import { createMeal, calculateMealTotal } from '../src/mealPlanner.js';
-    import { saveProduct, getProducts, saveMeal, getMeals, saveDailyLog, getDailyLog } from '../src/storage.js';
-    import { extractNutritionData } from '../src/ocr.js';
+    // Storage module (browser version using localStorage)
+    const storage = {
+      saveProduct(product) {
+        const products = this.getProducts();
+        products.push(product);
+        localStorage.setItem('nutriscan_products', JSON.stringify(products));
+      },
+      getProducts() {
+        const data = localStorage.getItem('nutriscan_products');
+        return data ? JSON.parse(data) : [];
+      },
+      saveMeal(meal) {
+        const meals = this.getMeals();
+        meals.push(meal);
+        localStorage.setItem('nutriscan_meals', JSON.stringify(meals));
+      },
+      getMeals() {
+        const data = localStorage.getItem('nutriscan_meals');
+        return data ? JSON.parse(data) : [];
+      },
+      saveDailyLog(log) {
+        const logs = this.getDailyLogs();
+        logs.push(log);
+        localStorage.setItem('nutriscan_dailyLogs', JSON.stringify(logs));
+      },
+      getDailyLogs() {
+        const data = localStorage.getItem('nutriscan_dailyLogs');
+        return data ? JSON.parse(data) : [];
+      }
+    };
 
-    // --- Navigation ---
-    const navButtons = document.querySelectorAll('nav button');
-    const sections = document.querySelectorAll('.section');
+    // Settings
+    let aiSettings = JSON.parse(localStorage.getItem('nutriscan_settings') || '{}');
 
-    navButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        navButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const sectionId = btn.dataset.section;
-        sections.forEach(s => s.classList.remove('active'));
-        document.getElementById(sectionId).classList.add('active');
+    // Current scanned data
+    let currentScanData = null;
+
+    // Tab navigation
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tab = link.dataset.tab;
+        document.querySelectorAll('nav a').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`tab-${tab}`).classList.add('active');
+        
+        if (tab === 'products') renderProducts();
+        if (tab === 'meals') {
+          renderMeals();
+          updateMealSummary();
+        }
+        if (tab === 'settings') loadSettings();
       });
     });
 
-    // --- Storage ---
-    function getStorage() {
-      try {
-        const data = localStorage.getItem('nutriscan');
-        return data ? JSON.parse(data) : {};
-      } catch {
-        return {};
+    // Settings
+    function loadSettings() {
+      document.getElementById('ai-endpoint').value = aiSettings.endpoint || '';
+      document.getElementById('ai-key').value = aiSettings.key || '';
+    }
+
+    document.getElementById('save-settings-btn').addEventListener('click', () => {
+      aiSettings = {
+        endpoint: document.getElementById('ai-endpoint').value,
+        key: document.getElementById('ai-key').value
+      };
+      localStorage.setItem('nutriscan_settings', JSON.stringify(aiSettings));
+      alert('Settings saved!');
+    });
+
+    // Scan functionality
+    const scanArea = document.getElementById('scan-area');
+    const imageInput = document.getElementById('image-input');
+    const scanBtn = document.getElementById('scan-btn');
+
+    scanBtn.addEventListener('click', () => imageInput.click());
+
+    scanArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      scanArea.classList.add('dragover');
+    });
+
+    scanArea.addEventListener('dragleave', () => {
+      scanArea.classList.remove('dragover');
+    });
+
+    scanArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      scanArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        processImage(file);
       }
-    }
+    });
 
-    function saveStorage(storage) {
-      localStorage.setItem('nutriscan', JSON.stringify(storage));
-    }
-
-    // --- Config ---
-    const endpointInput = document.getElementById('endpointUrl');
-    const apiKeyInput = document.getElementById('apiKey');
-    const saveConfigBtn = document.getElementById('saveConfigBtn');
-
-    function loadConfig() {
-      const config = JSON.parse(localStorage.getItem('nutriscan_config') || '{}');
-      endpointInput.value = config.endpoint || '';
-      apiKeyInput.value = config.key || '';
-    }
-
-    function saveConfig() {
-      localStorage.setItem('nutriscan_config', JSON.stringify({
-        endpoint: endpointInput.value,
-        key: apiKeyInput.value,
-      }));
-      alert('Configuration saved!');
-    }
-
-    loadConfig();
-    saveConfigBtn.addEventListener('click', saveConfig);
-
-    // --- Scan ---
-    const scanArea = document.getElementById('scanArea');
-    const fileInput = document.getElementById('fileInput');
-    const preview = document.getElementById('preview');
-    const scanBtn = document.getElementById('scanBtn');
-    const scanResult = document.getElementById('scanResult');
-    const saveProductBtn = document.getElementById('saveProductBtn');
-    const savedProducts = document.getElementById('savedProducts');
-    const productsList = document.getElementById('productsList');
-
-    scanArea.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', (e) => {
+    imageInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          preview.src = ev.target.result;
-          preview.classList.remove('hidden');
-          scanBtn.disabled = false;
-        };
-        reader.readAsDataURL(file);
+        processImage(file);
       }
     });
 
-    scanBtn.addEventListener('click', async () => {
-      const config = JSON.parse(localStorage.getItem('nutriscan_config') || '{}');
-      if (!config.endpoint || !config.key) {
-        alert('Please configure your AI endpoint in the Config tab first.');
+    async function processImage(file) {
+      if (!aiSettings.endpoint || !aiSettings.key) {
+        showError('Please configure AI settings first.', 'scan-error');
         return;
       }
 
-      scanBtn.textContent = 'Scanning...';
-      scanBtn.disabled = true;
+      showLoading(true);
+      hideError();
 
       try {
-        // Read the image as base64
-        const response = await fetch(preview.src);
-        const blob = await response.blob();
-        const reader = new FileReader();
-        const base64 = await new Promise((resolve) => {
-          reader.onloadend = () => resolve(reader.result.split(',')[1]);
-          reader.readAsDataURL(blob);
+        const base64 = await readFileAsBase64(file);
+        const response = await fetch(aiSettings.endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${aiSettings.key}`
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o',
+            messages: [{
+              role: 'user',
+              content: [
+                { type: 'text', text: 'Extract the nutrition information from this image. Return a JSON object with keys: per100g (object with energyKj, energyKcal, fat, saturatedFat, carbohydrates, sugars, fiber, protein, sodium), perServing (object with servingSize, energyKj, energyKcal, fat, saturatedFat, carbohydrates, sugars, fiber, protein, sodium). Only return valid JSON.' },
+                { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64}` } }
+              ]
+            }],
+            max_tokens: 1000
+          })
         });
 
-        const result = await extractNutritionData(base64, {
-          endpoint: config.endpoint,
-          key: config.key,
-        });
-
-        // Populate the form with extracted data
-        if (result.per100g) {
-          const p = result.per100g;
-          document.getElementById('energyKj').value = p.energyKj || 0;
-          document.getElementById('energyKcal').value = p.energyKcal || 0;
-          document.getElementById('fat').value = p.fat || 0;
-          document.getElementById('saturatedFat').value = p.saturatedFat || 0;
-          document.getElementById('carbohydrates').value = p.carbohydrates || 0;
-          document.getElementById('sugars').value = p.sugars || 0;
-          document.getElementById('fiber').value = p.fiber || 0;
-          document.getElementById('protein').value = p.protein || 0;
-          document.getElementById('sodium').value = p.sodium || 0;
+        if (!response.ok) {
+          throw new Error(`AI request failed: ${response.status}`);
         }
 
-        if (result.perServing) {
-          const s = result.perServing;
-          document.getElementById('servingSize').value = s.servingSize || '';
-          document.getElementById('servingEnergyKj').value = s.energyKj || 0;
-          document.getElementById('servingEnergyKcal').value = s.energyKcal || 0;
-          document.getElementById('servingFat').value = s.fat || 0;
-          document.getElementById('servingSaturatedFat').value = s.saturatedFat || 0;
-          document.getElementById('servingCarbohydrates').value = s.carbohydrates || 0;
-          document.getElementById('servingSugars').value = s.sugars || 0;
-          document.getElementById('servingFiber').value = s.fiber || 0;
-          document.getElementById('servingProtein').value = s.protein || 0;
-          document.getElementById('servingSodium').value = s.sodium || 0;
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content || '';
+        
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          currentScanData = JSON.parse(jsonMatch[0]);
+          displayScanResult(currentScanData);
+        } else {
+          throw new Error('No valid JSON found in response');
         }
-
-        scanResult.classList.remove('hidden');
-        savedProducts.classList.remove('hidden');
-        renderProducts();
-      } catch (err) {
-        alert('Scan failed: ' + err.message);
+      } catch (error) {
+        showError(error.message);
+      } finally {
+        showLoading(false);
       }
+    }
 
-      scanBtn.textContent = 'Extract Nutrition Data';
-      scanBtn.disabled = false;
+    function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function displayScanResult(data) {
+      document.getElementById('scan-result').classList.remove('hidden');
+      const grid = document.getElementById('scanned-nutrition');
+      grid.innerHTML = '';
+      
+      const per100g = data.per100g || {};
+      const fields = [
+        { key: 'energyKj', label: 'Energy (kJ)', value: per100g.energyKj },
+        { key: 'energyKcal', label: 'Energy (kcal)', value: per100g.energyKcal },
+        { key: 'fat', label: 'Fat', value: per100g.fat },
+        { key: 'saturatedFat', label: 'Saturated Fat', value: per100g.saturatedFat },
+        { key: 'carbohydrates', label: 'Carbohydrates', value: per100g.carbohydrates },
+        { key: 'sugars', label: 'Sugars', value: per100g.sugars },
+        { key: 'fiber', label: 'Fiber', value: per100g.fiber },
+        { key: 'protein', label: 'Protein', value: per100g.protein },
+        { key: 'sodium', label: 'Sodium', value: per100g.sodium }
+      ];
+
+      fields.forEach(field => {
+        if (field.value !== undefined && field.value !== null) {
+          const div = document.createElement('div');
+          div.className = 'nutrition-item';
+          div.innerHTML = `
+            <div class="value">${field.value}</div>
+            <div class="label">${field.label}</div>
+          `;
+          grid.appendChild(div);
+        }
+      });
+
+      document.getElementById('product-name').value = '';
+    }
+
+    // Manual OCR parsing
+    document.getElementById('parse-ocr-btn').addEventListener('click', () => {
+      const text = document.getElementById('ocr-text').value.trim();
+      if (!text) return;
+
+      try {
+        const result = parseNutritionTable(text);
+        displayParsedResult(result);
+      } catch (error) {
+        showError('Failed to parse nutrition data: ' + error.message);
+      }
     });
 
-    saveProductBtn.addEventListener('click', () => {
-      const storage = getStorage();
+    function parseNutritionTable(text) {
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+      let headerIdx = -1;
+      let headers = [];
+
+      for (let i = 0; i < lines.length; i++) {
+        const parts = lines[i].split('\t');
+        if (parts.length >= 2 && (parts[1].includes('g') || parts[1].includes('ml'))) {
+          headerIdx = i;
+          headers = parts.slice(1);
+          break;
+        }
+      }
+
+      if (headerIdx === -1 || headers.length === 0) {
+        return parseSingleColumn(lines);
+      }
+
+      const servingSize = headers[1] || headers[0];
+      const numCols = headers.length;
+      const per100g = {};
+      const perServing = {};
+
+      let currentLabel = '';
+      let currentValues = [];
+
+      for (let i = headerIdx + 1; i < lines.length; i++) {
+        const parts = lines[i].split('\t');
+
+        if (parts.length >= numCols + 1) {
+          if (currentLabel) {
+            processRow(currentLabel, currentValues, per100g, perServing);
+          }
+          currentLabel = parts[0];
+          currentValues = parts.slice(1);
+        } else if (currentLabel) {
+          currentValues.push(...parts);
+        }
+      }
+
+      if (currentLabel) {
+        processRow(currentLabel, currentValues, per100g, perServing);
+      }
+
+      return {
+        per100g,
+        perServing: { servingSize, ...perServing }
+      };
+    }
+
+    function parseSingleColumn(lines) {
+      const per100g = {};
+      let currentLabel = '';
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        const parts = line.split('\t');
+        
+        if (parts.length >= 2) {
+          currentLabel = parts[0].toLowerCase();
+          const value = extractValue(parts[1]);
+          
+          if (currentLabel.includes('energie')) {
+            if (parts[1].includes('kcal')) {
+              per100g.energyKcal = value;
+            } else {
+              per100g.energyKj = value;
+            }
+          } else if (currentLabel.includes('fett') && !currentLabel.includes('gesättigte')) {
+            per100g.fat = value;
+          } else if (currentLabel.includes('gesättigte')) {
+            per100g.saturatedFat = value;
+          } else if (currentLabel.includes('kohlenhydrat') || currentLabel.includes('koolhydrat')) {
+            per100g.carbohydrates = value;
+          } else if (currentLabel.includes('zucker') || currentLabel.includes('suiker')) {
+            per100g.sugars = value;
+          } else if (currentLabel.includes('ballast') || currentLabel.includes('vezel')) {
+            per100g.fiber = value;
+          } else if (currentLabel.includes('eiweiß') || currentLabel.includes('eiwit')) {
+            per100g.protein = value;
+          } else if (currentLabel.includes('salz') || currentLabel.includes('zout')) {
+            per100g.sodium = value;
+          }
+        }
+      }
+
+      return {
+        per100g,
+        perServing: null
+      };
+    }
+
+    function processRow(label, values, per100g, perServing) {
+      const lower = label.toLowerCase();
+      let field100g = null;
+      let fieldServing = null;
+
+      if (lower.includes('energie')) {
+        field100g = 'energyKj';
+        fieldServing = 'energyKj';
+      } else if (lower.includes('fett') && !lower.includes('gesättigte') && !lower.includes('satur') && !lower.includes('verzat')) {
+        field100g = 'fat';
+        fieldServing = 'fat';
+      } else if (lower.includes('gesättigte') || lower.includes('satur') || lower.includes('verzat')) {
+        field100g = 'saturatedFat';
+        fieldServing = 'saturatedFat';
+      } else if (lower.includes('kohlenhydrat') || lower.includes('koolhydrat')) {
+        field100g = 'carbohydrates';
+        fieldServing = 'carbohydrates';
+      } else if (lower.includes('zucker') || lower.includes('suiker')) {
+        field100g = 'sugars';
+        fieldServing = 'sugars';
+      } else if (lower.includes('ballast') || lower.includes('vezel')) {
+        field100g = 'fiber';
+        fieldServing = 'fiber';
+      } else if (lower.includes('eiweiß') || lower.includes('eiwit') || lower.includes('eiwit')) {
+        field100g = 'protein';
+        fieldServing = 'protein';
+      } else if (lower.includes('salz') || lower.includes('zout')) {
+        field100g = 'sodium';
+        fieldServing = 'sodium';
+      }
+
+      if (field100g) {
+        const val100g = extractValue(values[0]);
+        if (val100g !== null) {
+          per100g[field100g] = val100g;
+        }
+        if (values[1] !== undefined) {
+          const valServing = extractValue(values[1]);
+          if (valServing !== null) {
+            perServing[fieldServing] = valServing;
+          }
+        }
+      }
+    }
+
+    function extractValue(str) {
+      if (!str) return null;
+      const match = str.match(/([\d,]+)\s*(?:kJ|kcal|g|ml)?/i);
+      if (match) {
+        return parseFloat(match[1].replace(',', '.'));
+      }
+      return null;
+    }
+
+    function displayParsedResult(result) {
+      document.getElementById('parsed-result').classList.remove('hidden');
+      const grid = document.getElementById('parsed-nutrition');
+      grid.innerHTML = '';
+
+      const per100g = result.per100g || {};
+      const fields = [
+        { key: 'energyKj', label: 'Energy (kJ)', value: per100g.energyKj },
+        { key: 'energyKcal', label: 'Energy (kcal)', value: per100g.energyKcal },
+        { key: 'fat', label: 'Fat', value: per100g.fat },
+        { key: 'saturatedFat', label: 'Saturated Fat', value: per100g.saturatedFat },
+        { key: 'carbohydrates', label: 'Carbohydrates', value: per100g.carbohydrates },
+        { key: 'sugars', label: 'Sugars', value: per100g.sugars },
+        { key: 'fiber', label: 'Fiber', value: per100g.fiber },
+        { key: 'protein', label: 'Protein', value: per100g.protein },
+        { key: 'sodium', label: 'Sodium', value: per100g.sodium }
+      ];
+
+      fields.forEach(field => {
+        if (field.value !== undefined && field.value !== null) {
+          const div = document.createElement('div');
+          div.className = 'nutrition-item';
+          div.innerHTML = `
+            <div class="value">${field.value}</div>
+            <div class="label">${field.label}</div>
+          `;
+          grid.appendChild(div);
+        }
+      });
+
+      document.getElementById('manual-product-name').value = '';
+    }
+
+    // Save product
+    document.getElementById('save-product-btn').addEventListener('click', () => {
+      if (!currentScanData) return;
+      
       const product = {
-        id: 'prod-' + Date.now(),
-        name: document.getElementById('productName').value || 'Unnamed Product',
-        per100g: {
-          energyKj: parseFloat(document.getElementById('energyKj').value) || 0,
-          energyKcal: parseFloat(document.getElementById('energyKcal').value) || 0,
-          fat: parseFloat(document.getElementById('fat').value) || 0,
-          saturatedFat: parseFloat(document.getElementById('saturatedFat').value) || 0,
-          carbohydrates: parseFloat(document.getElementById('carbohydrates').value) || 0,
-          sugars: parseFloat(document.getElementById('sugars').value) || 0,
-          fiber: parseFloat(document.getElementById('fiber').value) || 0,
-          protein: parseFloat(document.getElementById('protein').value) || 0,
-          sodium: parseFloat(document.getElementById('sodium').value) || 0,
-        },
-        perServing: {
-          servingSize: document.getElementById('servingSize').value || '',
-          energyKj: parseFloat(document.getElementById('servingEnergyKj').value) || 0,
-          energyKcal: parseFloat(document.getElementById('servingEnergyKcal').value) || 0,
-          fat: parseFloat(document.getElementById('servingFat').value) || 0,
-          saturatedFat: parseFloat(document.getElementById('servingSaturatedFat').value) || 0,
-          carbohydrates: parseFloat(document.getElementById('servingCarbohydrates').value) || 0,
-          sugars: parseFloat(document.getElementById('servingSugars').value) || 0,
-          fiber: parseFloat(document.getElementById('servingFiber').value) || 0,
-          protein: parseFloat(document.getElementById('servingProtein').value) || 0,
-          sodium: parseFloat(document.getElementById('servingSodium').value) || 0,
-        },
+        id: `prod-${Date.now()}`,
+        name: document.getElementById('product-name').value || 'Unknown Product',
+        per100g: currentScanData.per100g || {},
+        perServing: currentScanData.perServing || null
       };
 
-      saveProduct(storage, product);
-      saveStorage(storage);
-      renderProducts();
+      storage.saveProduct(product);
       alert('Product saved!');
+      hideScanResult();
     });
 
+    document.getElementById('save-manual-btn').addEventListener('click', () => {
+      const text = document.getElementById('ocr-text').value.trim();
+      if (!text) return;
+
+      try {
+        const result = parseNutritionTable(text);
+        const product = {
+          id: `prod-${Date.now()}`,
+          name: document.getElementById('manual-product-name').value || 'Unknown Product',
+          per100g: result.per100g || {},
+          perServing: result.perServing || null
+        };
+
+        storage.saveProduct(product);
+        alert('Product saved!');
+        document.getElementById('parsed-result').classList.add('hidden');
+        document.getElementById('ocr-text').value = '';
+      } catch (error) {
+        showError('Failed to save: ' + error.message);
+      }
+    });
+
+    document.getElementById('cancel-scan-btn').addEventListener('click', hideScanResult);
+
+    function hideScanResult() {
+      document.getElementById('scan-result').classList.add('hidden');
+      currentScanData = null;
+    }
+
+    // Products list
     function renderProducts() {
-      const storage = getStorage();
-      const products = getProducts(storage);
-      productsList.innerHTML = '';
+      const products = storage.getProducts();
+      const list = document.getElementById('product-list');
+      const noProducts = document.getElementById('no-products');
+
       if (products.length === 0) {
-        productsList.innerHTML = '<p style="color: var(--text-light); font-size: 0.85rem;">No products saved yet.</p>';
+        list.innerHTML = '';
+        noProducts.classList.remove('hidden');
         return;
       }
-      products.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'meal-item';
-        div.innerHTML = `
-          <div class="meal-item-info">
-            <div class="name">${p.name}</div>
-            <div class="qty">${p.per100g.energyKcal} kcal / 100g</div>
+
+      noProducts.classList.add('hidden');
+      list.innerHTML = products.map(p => `
+        <li class="product-item">
+          <div class="product-info">
+            <h3>${p.name}</h3>
+            <p>Energy: ${p.per100g?.energyKcal || 0} kcal | Fat: ${p.per100g?.fat || 0}g</p>
           </div>
-        `;
-        productsList.appendChild(div);
-      });
+          <button class="danger" onclick="deleteProduct('${p.id}')">Delete</button>
+        </li>
+      `).join('');
     }
 
-    renderProducts();
+    function deleteProduct(id) {
+      if (!confirm('Delete this product?')) return;
+      const products = storage.getProducts().filter(p => p.id !== id);
+      localStorage.setItem('nutriscan_products', JSON.stringify(products));
+      renderProducts();
+    }
 
-    // --- Meal Planner ---
-    const mealNameInput = document.getElementById('mealName');
-    const mealDateInput = document.getElementById('mealDate');
-    const mealItemsContainer = document.getElementById('mealItems');
-    const addItemBtn = document.getElementById('addItemBtn');
-    const saveMealBtn = document.getElementById('saveMealBtn');
-    const mealsList = document.getElementById('mealsList');
-    const mealsContainer = document.getElementById('mealsContainer');
+    // Meals
+    let mealItems = [];
 
-    // Set today's date
-    const today = new Date().toISOString().split('T')[0];
-    mealDateInput.value = today;
-
-    let mealItemCount = 0;
-
-    function addMealItem() {
-      const storage = getStorage();
-      const products = getProducts(storage);
-      
-      const div = document.createElement('div');
-      div.className = 'item-row';
-      div.dataset.itemId = mealItemCount++;
-
-      let optionsHtml = '<option value="">Select product...</option>';
-      products.forEach(p => {
-        optionsHtml += `<option value="${p.id}">${p.name}</option>`;
-      });
-
-      div.innerHTML = `
-        <div>
-          <label>Product</label>
-          <select class="item-product">${optionsHtml}</select>
-        </div>
-        <div>
-          <label>Quantity (g)</label>
-          <input type="number" class="item-qty" value="100" min="0">
-        </div>
-        <div>
-          <label>Calories</label>
-          <input type="text" class="item-kcal" value="0" readonly>
-        </div>
-        <button class="danger remove-item">✕</button>
-      `;
-
-      mealItemsContainer.appendChild(div);
-
-      const select = div.querySelector('.item-product');
-      const qtyInput = div.querySelector('.item-qty');
-      const kcalInput = div.querySelector('.item-kcal');
-
-      function updateKcal() {
-        const productId = select.value;
-        const qty = parseFloat(qtyInput.value) || 0;
-        const product = products.find(p => p.id === productId);
-        if (product) {
-          const result = calculateNutrition(product, qty);
-          kcalInput.value = result.energyKcal.toFixed(1);
-        } else {
-          kcalInput.value = '0';
-        }
+    document.getElementById('add-item-btn').addEventListener('click', () => {
+      const products = storage.getProducts();
+      if (products.length === 0) {
+        alert('No products saved. Please save a product first.');
+        return;
       }
 
-      select.addEventListener('change', updateKcal);
-      qtyInput.addEventListener('input', updateKcal);
-
-      div.querySelector('.remove-item').addEventListener('click', () => {
-        div.remove();
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'meal-item-entry';
+      itemDiv.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px; align-items: center;';
+      
+      const select = document.createElement('select');
+      select.className = 'meal-product-select';
+      select.innerHTML = '<option value="">Select product...</option>' + 
+        products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+      
+      const quantityInput = document.createElement('input');
+      quantityInput.type = 'number';
+      quantityInput.placeholder = 'Quantity (g)';
+      quantityInput.min = '0';
+      quantityInput.value = '100';
+      quantityInput.style.width = '100px';
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = '×';
+      removeBtn.className = 'danger';
+      removeBtn.style.padding = '8px 12px';
+      removeBtn.addEventListener('click', () => {
+        itemDiv.remove();
+        updateMealSummary();
       });
+
+      itemDiv.appendChild(select);
+      itemDiv.appendChild(quantityInput);
+      itemDiv.appendChild(removeBtn);
+      document.getElementById('meal-items').appendChild(itemDiv);
+
+      select.addEventListener('change', updateMealSummary);
+      quantityInput.addEventListener('input', updateMealSummary);
+    });
+
+    function updateMealSummary() {
+      const entries = document.querySelectorAll('.meal-item-entry');
+      const products = storage.getProducts();
+      let totalEnergyKj = 0;
+      let totalEnergyKcal = 0;
+
+      entries.forEach(entry => {
+        const select = entry.querySelector('.meal-product-select');
+        const quantityInput = entry.querySelector('input[type="number"]');
+        const productId = select.value;
+        const quantity = parseFloat(quantityInput.value) || 0;
+
+        const product = products.find(p => p.id === productId);
+        if (product && product.per100g) {
+          totalEnergyKj += (product.per100g.energyKj || 0) * (quantity / 100);
+          totalEnergyKcal += (product.per100g.energyKcal || 0) * (quantity / 100);
+        }
+      });
+
+      const summary = document.getElementById('meal-summary');
+      const grid = document.getElementById('meal-summary-nutrition');
+      
+      if (totalEnergyKj > 0 || totalEnergyKcal > 0) {
+        summary.classList.remove('hidden');
+        grid.innerHTML = `
+          <div class="nutrition-item">
+            <div class="value">${totalEnergyKj.toFixed(1)}</div>
+            <div class="label">Energy (kJ)</div>
+          </div>
+          <div class="nutrition-item">
+            <div class="value">${totalEnergyKcal.toFixed(1)}</div>
+            <div class="label">Energy (kcal)</div>
+          </div>
+        `;
+      } else {
+        summary.classList.add('hidden');
+      }
     }
 
-    addItemBtn.addEventListener('click', addMealItem);
-
-    saveMealBtn.addEventListener('click', () => {
-      const name = mealNameInput.value.trim();
+    document.getElementById('save-meal-btn').addEventListener('click', () => {
+      const name = document.getElementById('meal-name').value.trim();
+      const date = document.getElementById('meal-date').value || new Date().toISOString().split('T')[0];
+      
       if (!name) {
         alert('Please enter a meal name.');
         return;
       }
 
-      const date = mealDateInput.value || today;
+      const entries = document.querySelectorAll('.meal-item-entry');
+      const products = storage.getProducts();
       const items = [];
-      const rows = mealItemsContainer.querySelectorAll('.item-row');
 
-      rows.forEach(row => {
-        const productId = row.querySelector('.item-product').value;
-        const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-        const kcal = parseFloat(row.querySelector('.item-kcal').value) || 0;
-        
-        if (productId) {
-          const storage = getStorage();
-          const products = getProducts(storage);
+      entries.forEach(entry => {
+        const select = entry.querySelector('.meal-product-select');
+        const quantityInput = entry.querySelector('input[type="number"]');
+        const productId = select.value;
+        const quantity = parseFloat(quantityInput.value) || 0;
+
+        if (productId && quantity > 0) {
           const product = products.find(p => p.id === productId);
           if (product) {
             items.push({
               productId,
-              quantity: qty,
+              quantity,
               name: product.name,
-              energyKcal: kcal,
+              energyKcal: (product.per100g?.energyKcal || 0) * (quantity / 100)
             });
           }
         }
       });
 
-      const meal = createMeal(name, items);
-      meal.date = date;
+      if (items.length === 0) {
+        alert('Please add at least one item to the meal.');
+        return;
+      }
 
-      const storage = getStorage();
-      saveMeal(storage, meal);
-      saveStorage(storage);
+      const meal = {
+        id: `meal-${Date.now()}`,
+        name,
+        items,
+        date
+      };
 
+      storage.saveMeal(meal);
       alert('Meal saved!');
-      mealItemsContainer.innerHTML = '';
-      mealItemCount = 0;
+      clearMealForm();
       renderMeals();
     });
 
+    document.getElementById('clear-meal-btn').addEventListener('click', clearMealForm);
+
+    function clearMealForm() {
+      document.getElementById('meal-name').value = '';
+      document.getElementById('meal-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('meal-items').innerHTML = '';
+      document.getElementById('meal-summary').classList.add('hidden');
+      mealItems = [];
+    }
+
     function renderMeals() {
-      const storage = getStorage();
-      const meals = getMeals(storage);
-      mealsContainer.innerHTML = '';
+      const meals = storage.getMeals();
+      const list = document.getElementById('meal-list');
+      const noMeals = document.getElementById('no-meals');
+
       if (meals.length === 0) {
-        mealsContainer.innerHTML = '<p style="color: var(--text-light); font-size: 0.85rem;">No meals saved yet.</p>';
-        return;
-      }
-      meals.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.style.marginBottom = '0.5rem';
-        div.innerHTML = `
-          <h3>${m.name} <span class="badge">${m.date}</span></h3>
-          ${m.items.map(i => `<p style="font-size: 0.85rem; color: var(--text-light);">${i.name} (${i.quantity}g) - ${i.energyKcal} kcal</p>`).join('')}
-        `;
-        mealsContainer.appendChild(div);
-      });
-      mealsList.classList.remove('hidden');
-    }
-
-    renderMeals();
-
-    // --- Daily Tracking ---
-    const trackDateInput = document.getElementById('trackDate');
-    const prevDayBtn = document.getElementById('prevDay');
-    const nextDayBtn = document.getElementById('nextDay');
-    const dailyTotal = document.getElementById('dailyTotal');
-    const dailyMeals = document.getElementById('dailyMeals');
-    const dailyMealsContainer = document.getElementById('dailyMealsContainer');
-    const dailyLog = document.getElementById('dailyLog');
-    const noData = document.getElementById('noData');
-
-    trackDateInput.value = today;
-
-    function navigateDay(delta) {
-      const date = new Date(trackDateInput.value);
-      date.setDate(date.getDate() + delta);
-      trackDateInput.value = date.toISOString().split('T')[0];
-      renderDailyLog();
-    }
-
-    prevDayBtn.addEventListener('click', () => navigateDay(-1));
-    nextDayBtn.addEventListener('click', () => navigateDay(1));
-
-    function renderDailyLog() {
-      const date = trackDateInput.value;
-      const storage = getStorage();
-      const meals = getMeals(storage);
-      const dayMeals = meals.filter(m => m.date === date);
-
-      if (dayMeals.length === 0) {
-        dailyTotal.classList.add('hidden');
-        dailyMeals.classList.add('hidden');
-        dailyLog.classList.add('hidden');
-        noData.classList.remove('hidden');
+        list.innerHTML = '';
+        noMeals.classList.remove('hidden');
         return;
       }
 
-      noData.classList.add('hidden');
-      dailyTotal.classList.remove('hidden');
-      dailyMeals.classList.remove('hidden');
-      dailyLog.classList.remove('hidden');
+      noMeals.classList.add('hidden');
+      list.innerHTML = meals.map(m => `
+        <li class="meal-item">
+          <div class="product-info">
+            <h3>${m.name}</h3>
+            <p>${m.date} | ${m.items.length} items</p>
+          </div>
+          <button class="danger" onclick="deleteMeal('${m.id}')">Delete</button>
+        </li>
+      `).join('');
+    }
 
-      // Calculate totals
-      let total = { energyKj: 0, energyKcal: 0, fat: 0, saturatedFat: 0, carbohydrates: 0, sugars: 0, fiber: 0, protein: 0, sodium: 0 };
+    function deleteMeal(id) {
+      if (!confirm('Delete this meal?')) return;
+      const meals = storage.getMeals().filter(m => m.id !== id);
+      localStorage.setItem('nutriscan_meals', JSON.stringify(meals));
+      renderMeals();
+    }
 
-      dayMeals.forEach(meal => {
-        const mealTotal = calculateMealTotal(meal);
-        total.energyKj += mealTotal.energyKj || 0;
-        total.energyKcal += mealTotal.energyKcal || 0;
-        total.fat += mealTotal.fat || 0;
-        total.saturatedFat += mealTotal.saturatedFat || 0;
-        total.carbohydrates += mealTotal.carbohydrates || 0;
-        total.sugars += mealTotal.sugars || 0;
-        total.fiber += mealTotal.fiber || 0;
-        total.protein += mealTotal.protein || 0;
-        total.sodium += mealTotal.sodium || 0;
-      });
-
-      // Update UI
-      document.getElementById('totalKcal').textContent = total.energyKcal.toFixed(1);
-      document.getElementById('totalFat').textContent = total.fat.toFixed(1);
-      document.getElementById('totalCarbs').textContent = total.carbohydrates.toFixed(1);
-      document.getElementById('totalProtein').textContent = total.protein.toFixed(1);
-
-      document.getElementById('logEnergyKcal').textContent = total.energyKcal.toFixed(1);
-      document.getElementById('logEnergyKj').textContent = total.energyKj.toFixed(1);
-      document.getElementById('logFat').textContent = total.fat.toFixed(1);
-      document.getElementById('logSaturatedFat').textContent = total.saturatedFat.toFixed(1);
-      document.getElementById('logCarbs').textContent = total.carbohydrates.toFixed(1);
-      document.getElementById('logSugars').textContent = total.sugars.toFixed(1);
-      document.getElementById('logFiber').textContent = total.fiber.toFixed(1);
-      document.getElementById('logProtein').textContent = total.protein.toFixed(1);
-      document.getElementById('logSodium').textContent = total.sodium.toFixed(2);
-
-      // Render meals
-      dailyMealsContainer.innerHTML = '';
-      dayMeals.forEach(meal => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.style.marginBottom = '0.5rem';
-        const mealTotal = calculateMealTotal(meal);
-        div.innerHTML = `
-          <h3>${meal.name}</h3>
-          ${meal.items.map(i => `<p style="font-size: 0.85rem; color: var(--text-light);">${i.name} (${i.quantity}g) - ${i.energyKcal} kcal</p>`).join('')}
-          <p style="font-size: 0.85rem; margin-top: 0.5rem; font-weight: 500;">
-            Total: ${mealTotal.energyKcal} kcal
-          </p>
-        `;
-        dailyMealsContainer.appendChild(div);
-      });
-
-      // Save daily log
-      const log = {
-        date,
-        totalEnergyKcal: total.energyKcal,
-        totalFat: total.fat,
-        totalCarbohydrates: total.carbohydrates,
-        totalProtein: total.protein,
-        totalSodium: total.sodium,
+    // Data management
+    document.getElementById('export-data-btn').addEventListener('click', () => {
+      const data = {
+        products: storage.getProducts(),
+        meals: storage.getMeals(),
+        settings: aiSettings
       };
-      saveDailyLog(storage, log);
-      saveStorage(storage);
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nutriscan-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('import-data-btn').addEventListener('click', () => {
+      document.getElementById('import-file-input').click();
+    });
+
+    document.getElementById('import-file-input').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+          if (data.products) {
+            localStorage.setItem('nutriscan_products', JSON.stringify(data.products));
+          }
+          if (data.meals) {
+            localStorage.setItem('nutriscan_meals', JSON.stringify(data.meals));
+          }
+          if (data.settings) {
+            aiSettings = data.settings;
+            localStorage.setItem('nutriscan_settings', JSON.stringify(aiSettings));
+          }
+          alert('Data imported successfully!');
+          location.reload();
+        } catch (error) {
+          alert('Failed to import data: ' + error.message);
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    });
+
+    document.getElementById('clear-data-btn').addEventListener('click', () => {
+      if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) return;
+      localStorage.removeItem('nutriscan_products');
+      localStorage.removeItem('nutriscan_meals');
+      localStorage.removeItem('nutriscan_dailyLogs');
+      localStorage.removeItem('nutriscan_settings');
+      alert('All data cleared.');
+      location.reload();
+    });
+
+    // Utility functions
+    function showLoading(show) {
+      document.getElementById('scan-loading').classList.toggle('hidden', !show);
+      scanBtn.disabled = show;
     }
 
-    renderDailyLog();
+    function showError(message, elementId = 'scan-error') {
+      const el = document.getElementById(elementId);
+      el.textContent = message;
+      el.classList.remove('hidden');
+    }
+
+    function hideError() {
+      document.getElementById('scan-error').classList.add('hidden');
+    }
+
+    // Set today's date as default
+    document.getElementById('meal-date').value = new Date().toISOString().split('T')[0];
   </script>
 </body>
 </html>
