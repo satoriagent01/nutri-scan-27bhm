@@ -1,38 +1,62 @@
 /**
- * Storage functions with storage object parameter.
+ * Save a product to storage.
+ * @param {object} storage - The storage object
+ * @param {object} product - The product to save
  */
-
-function saveProduct(storage, product) {
+export function saveProduct(storage, product) {
   if (!storage.products) {
     storage.products = [];
   }
   storage.products.push(product);
 }
 
-function getProducts(storage) {
+/**
+ * Get all products from storage.
+ * @param {object} storage - The storage object
+ * @returns {Array} Array of products
+ */
+export function getProducts(storage) {
   return storage.products || [];
 }
 
-function saveMeal(storage, meal) {
+/**
+ * Save a meal to storage.
+ * @param {object} storage - The storage object
+ * @param {object} meal - The meal to save
+ */
+export function saveMeal(storage, meal) {
   if (!storage.meals) {
     storage.meals = [];
   }
   storage.meals.push(meal);
 }
 
-function getMeals(storage) {
+/**
+ * Get all meals from storage.
+ * @param {object} storage - The storage object
+ * @returns {Array} Array of meals
+ */
+export function getMeals(storage) {
   return storage.meals || [];
 }
 
-function saveDailyLog(storage, log) {
+/**
+ * Save a daily log to storage.
+ * @param {object} storage - The storage object
+ * @param {object} log - The daily log to save
+ */
+export function saveDailyLog(storage, log) {
   if (!storage.dailyLogs) {
     storage.dailyLogs = [];
   }
   storage.dailyLogs.push(log);
 }
 
-function getDailyLog(storage) {
+/**
+ * Get all daily logs from storage.
+ * @param {object} storage - The storage object
+ * @returns {Array} Array of daily logs
+ */
+export function getDailyLog(storage) {
   return storage.dailyLogs || [];
 }
-
-export { saveProduct, getProducts, saveMeal, getMeals, saveDailyLog, getDailyLog };
