@@ -1,84 +1,93 @@
 # NutriScan
 
-A free, ad-free web application that allows users to scan nutrition labels from food products using their camera, extract nutritional data via OCR and AI, and track their daily nutritional intake through a custom meal planner. All data is stored locally in the browser.
+A nutrition label scanner and meal planner application. Parse OCR text from nutrition labels, scale nutrition values, plan meals, and track daily intake.
 
 ## Features
 
-- **Scan Nutrition Labels**: Use your camera to capture nutrition labels and extract data via AI
-- **Manual Entry**: Paste OCR text from nutrition labels for manual parsing
-- **Product Database**: Save and manage your favorite food products
-- **Meal Planner**: Create meals with multiple items and track nutritional totals
-- **Local Storage**: All data stored locally in your browser - no server required
-
-## Stack
-
-- **Runtime**: Node 24 with ES modules
-- **Testing**: Node's built-in test runner (`node --test`)
-- **Build**: No build step
-- **UI**: Static web page in `public/`
-- **AI**: OpenAI-compatible endpoint (configured by user via URL and key)
-- **Storage**: LocalStorage (browser-only, abstracted for testing)
-
-## Modules
-
-### `src/parser.js`
-- `parseNutritionTable(text)` - Parses OCR text from nutrition labels into structured data with `per100g` and `perServing` sections
-
-### `src/nutrition.js`
-- `calculateNutrition(item, quantity)` - Scales nutrition values by quantity (e.g., per 100g to per serving)
-
-### `src/mealPlanner.js`
-- `createMeal(name, items)` - Creates a meal with a name and list of items
-- `calculateMealTotal(meal)` - Calculates total nutrition for all items in a meal
-
-### `src/storage.js`
-- `saveProduct(storage, product)` / `getProducts(storage)` - Manage saved products
-- `saveMeal(storage, meal)` / `getMeals(storage)` - Manage saved meals
-- `saveDailyLog(storage, log)` / `getDailyLog(storage)` - Manage daily nutrition logs
-
-### `src/ocr.js`
-- `extractNutritionData(imageData, options)` - Sends image to AI endpoint for OCR and nutrition extraction
+- **OCR Parsing**: Parse nutrition tables from OCR text (supports German, Dutch, and other formats)
+- **Nutrition Scaling**: Scale nutrition values by serving size/quantity
+- **Meal Planning**: Create meals with multiple items and calculate totals
+- **Storage**: Save and retrieve products, meals, and daily logs
+- **Web UI**: Simple browser interface for scanning and planning
 
 ## How to Run
 
-### Development
+### Prerequisites
+
+- Node.js 24+
+- A modern web browser
+
+### Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/satoriagent01/nutri-scan-27bhm.git
+   cd nutri-scan-27bhm
+   ```
+
+2. No build step or dependencies required. The project uses ES modules natively.
+
+3. Open `public/index.html` in a web browser. Since this uses ES modules, you'll need to serve it via a local server:
+   ```bash
+   npx serve public
+   ```
+   Then open `http://localhost:3000` in your browser.
+
+### Running Tests
 
 ```bash
-# Run tests
-npm test
-
-# Serve the web interface
-npx serve public
+node --test tests/*.test.js
 ```
 
-### Configure AI Endpoint
+## AI Endpoint Configuration
+
+The app supports integration with OpenAI-compatible endpoints for OCR processing. Configure the endpoint in the app's UI:
 
 1. Open the app in your browser
-2. Go to the **Settings** tab
-3. Enter your AI endpoint URL (e.g., `https://api.openai.com/v1/chat/completions`)
-4. Enter your API key
-5. Click **Save Settings**
+2. Enter your AI endpoint URL (e.g., `https://api.openai.com/v1`)
+3. Enter your API key (e.g., `sk-...`)
+4. Click "Save Configuration"
 
-The app uses an OpenAI-compatible endpoint. You can use any compatible service like OpenAI, Azure OpenAI, or local models via Ollama.
+The configuration is stored in the browser's `localStorage`.
 
 ## How to Test
 
+Run the test suite with Node.js:
+
 ```bash
-npm test
+node --test tests/*.test.js
 ```
 
-This runs all tests using Node's built-in test runner.
+The tests cover:
+- Nutrition table parsing (German and Dutch formats)
+- Nutrition value scaling by quantity
+- Meal creation and total calculation
+- Storage operations (products, meals, daily logs)
 
-## What's Not Done Yet
+## Project Structure
 
-- [ ] Real-time camera capture (currently uses file upload)
-- [ ] Daily nutrition goals and tracking
-- [ ] Meal recommendations based on dietary preferences
-- [ ] Export to CSV/PDF
-- [ ] Dark mode
-- [ ] Mobile app (PWA support)
-- [ ] Cloud sync for data backup
+```
+├── src/
+│   ├── parser.js       # OCR text parsing
+│   ├── nutrition.js    # Nutrition value scaling
+│   ├── mealPlanner.js  # Meal creation and totals
+│   └── storage.js      # Data persistence layer
+├── public/
+│   └── index.html      # Web UI
+├── tests/
+│   ├── parser.test.js  # Parser tests
+│   ├── nutrition.test.js  # Nutrition tests
+│   ├── mealPlanner.test.js  # Meal planner tests
+│   └── storage.test.js  # Storage tests
+└── README.md
+```
 
-## License
+## What Is Not Done Yet
 
-MIT
+- No actual OCR/image processing integration (the UI accepts pasted text)
+- No real AI endpoint integration (configuration is stored but not actively used for OCR)
+- No authentication or user accounts
+- No cloud storage (data is stored in memory during the session)
+- No mobile app support
+- No barcode scanning
+- No nutritional analysis or recommendations
