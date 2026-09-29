@@ -1,17 +1,26 @@
-/**
- * Create meals and calculate totals.
- */
+import { randomUUID } from 'node:crypto';
 
-function createMeal(name, items) {
+/**
+ * Create a meal with a name and items.
+ * @param {string} name - The name of the meal
+ * @param {Array} items - Array of meal items
+ * @returns {object} The created meal
+ */
+export function createMeal(name, items) {
   return {
-    id: `meal-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    name,
+    id: randomUUID(),
+    name: name,
     items: items || [],
     date: new Date().toISOString().split('T')[0],
   };
 }
 
-function calculateMealTotal(meal) {
+/**
+ * Calculate the total nutrition for a meal.
+ * @param {object} meal - The meal object with items
+ * @returns {object} Total nutrition values
+ */
+export function calculateMealTotal(meal) {
   const total = {
     energyKj: 0,
     energyKcal: 0,
@@ -24,7 +33,9 @@ function calculateMealTotal(meal) {
     sodium: 0,
   };
 
-  if (!meal.items) return total;
+  if (!meal.items || meal.items.length === 0) {
+    return total;
+  }
 
   for (const item of meal.items) {
     total.energyKj += item.energyKj || 0;
@@ -40,5 +51,3 @@ function calculateMealTotal(meal) {
 
   return total;
 }
-
-export { createMeal, calculateMealTotal };
