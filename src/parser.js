@@ -1,3 +1,12 @@
+/**
+ * Parse OCR nutrition table text into structured nutrition data.
+ */
+
+/**
+ * Parse a nutrition table string into structured data.
+ * @param {string} text - The OCR text of a nutrition table.
+ * @returns {object} Parsed nutrition data with per100g and perServing sections.
+ */
 export function parseNutritionTable(text) {
   const lines = text.split('\n').map(l => l.trim()).filter(l => l);
 
@@ -71,78 +80,88 @@ function processRow(label, values, per100g, perServing) {
   } else if (lower.includes('gesättigte') || lower.includes('satur') || lower.includes('verzat')) {
     field100g = 'saturatedFat';
     fieldServing = 'saturatedFat';
-  } else if (lower.includes('koolhydraten') || lower.includes('carbo')) {
+  } else if (lower.includes('kohlenhydrate') || lower.includes('glucides') || lower.includes('koolhydraten') || lower.includes('carboidrati')) {
     field100g = 'carbohydrates';
     fieldServing = 'carbohydrates';
-  } else if (lower.includes('zucker') || lower.includes('suiker') || lower.includes('sucre')) {
+  } else if (lower.includes('zucker') || lower.includes('sucres') || lower.includes('suikers') || lower.includes('suikers')) {
     field100g = 'sugars';
     fieldServing = 'sugars';
-  } else if (lower.includes('faser') || lower.includes('vezel') || lower.includes('fibre')) {
+  } else if (lower.includes('ballast') || lower.includes('fibres') || lower.includes('vezels') || lower.includes('fibre')) {
     field100g = 'fiber';
     fieldServing = 'fiber';
-  } else if (lower.includes('eiweiß') || lower.includes('eiwit') || lower.includes('protéine')) {
+  } else if (lower.includes('eiweiß') || lower.includes('protéines') || lower.includes('eiwitten') || lower.includes('proteine') || lower.includes('eiwitten')) {
     field100g = 'protein';
     fieldServing = 'protein';
-  } else if (lower.includes('salz') || lower.includes('zout') || lower.includes('sale')) {
+  } else if (lower.includes('salz') || lower.includes('sel') || lower.includes('zout') || lower.includes('sale')) {
     field100g = 'sodium';
     fieldServing = 'sodium';
   }
 
-  if (field100g && values[0]) {
-    per100g[field100g] = parseValue(values[0]);
-  }
-  if (fieldServing && values[1]) {
-    perServing[fieldServing] = parseValue(values[1]);
+  if (field100g && values.length >= 1) {
+    const val100g = extractValue(values[0]);
+    if (val100g !== null) {
+      per100g[field100g] = val100g;
+    }
   }
 
-  // Handle energy kJ/kcal split across lines
-  if (lower.includes('energie')) {
-    if (values[0] && values[0].includes('kJ')) {
-      per100g['energyKj'] = parseValue(values[0]);
-    }
-    if (values[1] && values[1].includes('kJ')) {
-      perServing['energyKj'] = parseValue(values[1]);
-    }
-    if (values[0] && values[0].includes('kcal')) {
-      per100g['energyKcal'] = parseValue(values[0]);
-    }
-    if (values[1] && values[1].includes('kcal')) {
-      perServing['energyKcal'] = parseValue(values[1]);
+  if (fieldServing && values.length >= 2) {
+    const valServing = extractValue(values[1]);
+    if (valServing !== null) {
+      perServing[fieldServing] = valServing;
     }
   }
 }
 
-function parseValue(str) {
-  if (!str) return 0;
-  const match = str.match(/([\d,]+)/);
-  if (match) {
-    return parseFloat(match[1].replace(',', '.'));
-  }
-  return 0;
+function extractValue(str) {
+  // Remove 'g', 'ml', 'kJ', 'kcal' and whitespace
+  const cleaned = str.replace(/g|ml|kJ|kcal|\/|per|\/|energy|energie|energi|energia/gi, '').trim();
+  // Replace comma with dot for decimal numbers
+  const numStr = cleaned.replace(',', '.');
+  const num = parseFloat(numStr);
+  if (isNaN(num)) return null;
+  return num;
 }
 
 function parseSingleColumn(lines) {
   const per100g = {};
+  let foundHeader = false;
 
   for (const line of lines) {
-    const parts = line.split('\t');
-    if (parts.length >= 2) {
-      const label = parts[0].toLowerCase();
-      const value = parts[1];
+    if (line.includes('100 g') || line.includes('100ml') || line.includes('100 ml')) {
+      foundHeader = true;
+      continue;
+    }
 
-      if (label.includes('energie')) {
-        if (value.includes('kJ')) {
-          per100g['energyKj'] = parseValue(value);
-        } else if (value.includes('kcal')) {
-          per100g['energyKcal'] = parseValue(value);
-        }
-      } else if (label.includes('fett')) {
-        per100g['fat'] = parseValue(value);
-      } else if (label.includes('koolhydraten') || label.includes('carbo')) {
-        per100g['carbohydrates'] = parseValue(value);
-      } else if (label.includes('eiweiß') || label.includes('eiwit')) {
-        per100g['protein'] = parseValue(value);
+    if (!foundHeader) continue;
+
+    const parts = line.split('\t');
+    const label = parts[0].trim().toLowerCase();
+    const valueStr = parts[1] ? parts[1].trim() : '';
+
+    if (label.includes('energie')) {
+      // Check if it's kcal or kJ
+      if (valueStr.includes('kcal')) {
+        per100g.energyKcal = extractValue(valueStr);
+      } else if (valueStr.includes('kJ')) {
+        per100g.energyKj = extractValue(valueStr);
+      } else {
+        // Try to determine from context
+        per100g.energyKcal = extractValue(valueStr);
       }
+    } else if (label.includes('fett') && !label.includes('gesättigte') && !label.includes('satur') && !label.includes('verzat')) {
+      per100g.fat = extractValue(valueStr);
+    } else if (label.includes('gesättigte') || label.includes('satur') || label.includes('verzat')) {
+      per100g.saturatedFat = extractValue(valueStr);
+    } else if (label.includes('kohlenhydrate') || label.includes('glucides') || label.includes('koolhydraten') || label.includes('carboidrati')) {
+      per100g.carbohydrates = extractValue(valueStr);
+    } else if (label.includes('zucker') || label.includes('sucres') || label.includes('suikers')) {
+      per100g.sugars = extractValue(valueStr);
+    } else if (label.includes('ballast') || label.includes('fibres') || label.includes('vezels') || label.includes('fibre')) {
+      per100g.fiber = extractValue(valueStr);
+    } else if (label.includes('eiweiß') || label.includes('protéines') || label.includes('eiwitten') || label.includes('proteine')) {
+      per100g.protein = extractValue(valueStr);
+    } else if (label.includes('salz') || label.includes('sel') || label.includes('zout') || label.includes('sale')) {
+      per100g.sodium = extractValue(valueStr);
     }
   }
 
